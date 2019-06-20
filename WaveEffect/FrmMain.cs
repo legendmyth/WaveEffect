@@ -56,22 +56,33 @@ namespace WaveEffect
             IntPtr ptr = bmpData.Scan0;
             int bytesCount = bmpData.Stride * height;
             byte[] arrDst = new byte[sourceArray.Length];
+            //for (int i = 0; i < bytesCount; i++)
+            //{
+            //    arrDst[i] = 127;
+            //}
+
+            double sj = Math.Sqrt(height * height + width * width) / 4;
+
             Array.Copy(sourceArray, arrDst, sourceArray.Length);
             for (int i = 0; i < bytesCount; i += 3)
             {
                 int y = (int)(i / bmpData.Stride) - height / 2;
                 int x = (i % bmpData.Stride) / 3 - width / 2;
                 double p = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
-                int tranx = (int)(x + x * ratio * Math.Sin(p / rate));
-                int trany = (int)(y + y * ratio * Math.Sin(p / rate));
+                int tranx = (int)(x + x * ratio * Math.Sin(p / rate) * Math.Exp(- p/sj) );
+                int trany = (int)(y + y * ratio * Math.Sin(p / rate) * Math.Exp(- p/sj) );
                 int pixx = tranx + width / 2;
                 int pixy = trany + height / 2;
 
                 if (pixx > 0 && pixx < width && pixy > 0 && pixy < height)
                 {
-                    arrDst[pixx * 3 + pixy * bmpData.Stride] = sourceArray[i];
-                    arrDst[pixx * 3 + pixy * bmpData.Stride + 1] = sourceArray[i + 1];
-                    arrDst[pixx * 3 + pixy * bmpData.Stride + 2] = sourceArray[i + 2];
+                    //arrDst[pixx * 3 + pixy * bmpData.Stride] = sourceArray[i];
+                    //arrDst[pixx * 3 + pixy * bmpData.Stride + 1] = sourceArray[i + 1];
+                    //arrDst[pixx * 3 + pixy * bmpData.Stride + 2] = sourceArray[i + 2];
+
+                    arrDst[i] = sourceArray[pixx * 3 + pixy * bmpData.Stride];
+                    arrDst[i + 1] = sourceArray[pixx * 3 + pixy * bmpData.Stride + 1];
+                    arrDst[i + 2] = sourceArray[pixx * 3 + pixy * bmpData.Stride + 2];
                 }
             }
             Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
