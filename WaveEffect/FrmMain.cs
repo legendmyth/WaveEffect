@@ -44,11 +44,16 @@ namespace WaveEffect
             this.Render();
         }
 
+        private void tbEAFRate_Scroll(object sender, EventArgs e)
+        {
+            this.Render();
+        }
+
         private void Render()
         {
             double rate = this.tbWavelength.Value;
             double ratio = this.tbAmplitude.Value * 0.01;
-
+            double eafRate = this.tbEAFRate.Value * 0.02;
             int width = bitmap.Width;
             int height = bitmap.Height;
             Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -69,8 +74,8 @@ namespace WaveEffect
                 int y = (int)(i / bmpData.Stride) - height / 2;
                 int x = (i % bmpData.Stride) / 3 - width / 2;
                 double p = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
-                int tranx = (int)(x + x * ratio * Math.Sin(p / rate) * Math.Exp(- p/sj) );
-                int trany = (int)(y + y * ratio * Math.Sin(p / rate) * Math.Exp(- p/sj) );
+                int tranx = (int)(x + x * ratio * Math.Sin(p / rate) * Math.Exp(-eafRate * p / sj));
+                int trany = (int)(y + y * ratio * Math.Sin(p / rate) * Math.Exp(-eafRate * p / sj));
                 int pixx = tranx + width / 2;
                 int pixy = trany + height / 2;
 
@@ -87,9 +92,9 @@ namespace WaveEffect
             }
             Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
             bitmap.UnlockBits(bmpData);
-            formGraphics.DrawImage(bitmap, 100, 100);
+            formGraphics.DrawImage(bitmap, 100, 120);
         }
 
-
+        
     }
 }
