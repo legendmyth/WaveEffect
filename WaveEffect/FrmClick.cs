@@ -120,16 +120,19 @@ namespace WaveEffect
                     {
                         int y = j - point_y;
                         int x = i - point_x;
-                        int tranx = (int)(x + x * ratio * Math.Sin(p / rate) / p);
-                        int trany = (int)(y + y * ratio * Math.Sin(p / rate) / p);
-                        int pixx = tranx + point_x;
-                        int pixy = trany + point_y;
-
-                        if (pixx > 0 && pixx < width && pixy > 0 && pixy < height)
+                        if (x > 0 && x < width && y > 0 && y < height)
                         {
-                            arrDst[i * 3 + j * width * 3] = sourceArray[pixx * 3 + pixy * width * 3];
-                            arrDst[i * 3 + j * width * 3 + 1] = sourceArray[pixx * 3 + pixy * width * 3 + 1];
-                            arrDst[i * 3 + j * width * 3 + 2] = sourceArray[pixx * 3 + pixy * width * 3 + 2];
+                            int tranx = (int)(x + x * ratio * Math.Sin(p / rate) / p);
+                            int trany = (int)(y + y * ratio * Math.Sin(p / rate) / p);
+                            int pixx = tranx + point_x;
+                            int pixy = trany + point_y;
+
+                            if (pixx > 0 && pixx < width && pixy > 0 && pixy < height)
+                            {
+                                arrDst[i * 3 + j * width * 3] = sourceArray[pixx * 3 + pixy * width * 3];
+                                arrDst[i * 3 + j * width * 3 + 1] = sourceArray[pixx * 3 + pixy * width * 3 + 1];
+                                arrDst[i * 3 + j * width * 3 + 2] = sourceArray[pixx * 3 + pixy * width * 3 + 2];
+                            }
                         }
                     }
                 }
