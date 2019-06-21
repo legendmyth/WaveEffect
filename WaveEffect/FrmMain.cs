@@ -2,12 +2,15 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace WaveEffect
 {
     public partial class FrmMain : Form
     {
+
+        private Thread renderThread;
         private Graphics formGraphics;
 
         private Bitmap bitmap;
@@ -33,6 +36,21 @@ namespace WaveEffect
             sourceArray = new byte[bytesCount];
             Marshal.Copy(ptr, sourceArray, 0, bytesCount);
             sourceMap.UnlockBits(bmpData);
+            this.renderThread = new Thread(new ThreadStart(DrawBitmap));
+            this.renderThread.IsBackground = true;
+            this.renderThread.Start();
+        }
+
+        private void DrawBitmap()
+        {
+            while (true)
+            {
+                lock (bitmap)
+                {
+                    formGraphics.DrawImage(bitmap, 100, 120);
+                }
+                Thread.Sleep(15);
+            }
         }
 
         private void tbWavelength_Scroll(object sender, EventArgs e)
@@ -51,50 +69,50 @@ namespace WaveEffect
 
         private void Render()
         {
-            double rate = this.tbWavelength.Value;
-            double ratio = this.tbAmplitude.Value * 0.01;
-            double eafRate = this.tbEAFRate.Value * 0.02;
-            int width = bitmap.Width;
-            int height = bitmap.Height;
-            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-            System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);//curBitmap.PixelFormat
-            IntPtr ptr = bmpData.Scan0;
-            int bytesCount = bmpData.Stride * height;
-            byte[] arrDst = new byte[sourceArray.Length];
-            //for (int i = 0; i < bytesCount; i++)
-            //{
-            //    arrDst[i] = 127;
-            //}
-
-            double sj = Math.Sqrt(height * height + width * width) / 4;
-
-            Array.Copy(sourceArray, arrDst, sourceArray.Length);
-            for (int i = 0; i < bytesCount; i += 3)
+            lock (bitmap)
             {
-                int y = (int)(i / bmpData.Stride) - height / 2;
-                int x = (i % bmpData.Stride) / 3 - width / 2;
-                double p = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
-                int tranx = (int)(x + x * ratio * Math.Sin(p / rate) * Math.Exp(-eafRate * p / sj));
-                int trany = (int)(y + y * ratio * Math.Sin(p / rate) * Math.Exp(-eafRate * p / sj));
-                int pixx = tranx + width / 2;
-                int pixy = trany + height / 2;
+                double rate = this.tbWavelength.Value * 0.1;
+                double ratio = this.tbAmplitude.Value; //* 0.01;
+                double eafRate = this.tbEAFRate.Value * 0.02;
+                int width = bitmap.Width;
+                int height = bitmap.Height;
+                Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+                System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);//curBitmap.PixelFormat
+                IntPtr ptr = bmpData.Scan0;
+                int bytesCount = bmpData.Stride * height;
+                byte[] arrDst = new byte[sourceArray.Length];
+                //for (int i = 0; i < bytesCount; i++)
+                //{
+                //    arrDst[i] = 127;
+                //}
 
-                if (pixx > 0 && pixx < width && pixy > 0 && pixy < height)
+                double sj = Math.Sqrt(height * height + width * width) / 4;
+
+                Array.Copy(sourceArray, arrDst, sourceArray.Length);
+                for (int i = 0; i < bytesCount; i += 3)
                 {
-                    //arrDst[pixx * 3 + pixy * bmpData.Stride] = sourceArray[i];
-                    //arrDst[pixx * 3 + pixy * bmpData.Stride + 1] = sourceArray[i + 1];
-                    //arrDst[pixx * 3 + pixy * bmpData.Stride + 2] = sourceArray[i + 2];
+                    int y = (int)(i / bmpData.Stride) - height / 2;
+                    int x = (i % bmpData.Stride) / 3 - width / 2;
+                    double p = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+                    int tranx = (int)(x + x * ratio * Math.Sin(p / rate) * Math.Exp(-eafRate * p / sj) / p);
+                    int trany = (int)(y + y * ratio * Math.Sin(p / rate) * Math.Exp(-eafRate * p / sj) / p);
+                    int pixx = tranx + width / 2;
+                    int pixy = trany + height / 2;
 
-                    arrDst[i] = sourceArray[pixx * 3 + pixy * bmpData.Stride];
-                    arrDst[i + 1] = sourceArray[pixx * 3 + pixy * bmpData.Stride + 1];
-                    arrDst[i + 2] = sourceArray[pixx * 3 + pixy * bmpData.Stride + 2];
+                    if (pixx > 0 && pixx < width && pixy > 0 && pixy < height)
+                    {
+                        //arrDst[pixx * 3 + pixy * bmpData.Stride] = sourceArray[i];
+                        //arrDst[pixx * 3 + pixy * bmpData.Stride + 1] = sourceArray[i + 1];
+                        //arrDst[pixx * 3 + pixy * bmpData.Stride + 2] = sourceArray[i + 2];
+
+                        arrDst[i] = sourceArray[pixx * 3 + pixy * bmpData.Stride];
+                        arrDst[i + 1] = sourceArray[pixx * 3 + pixy * bmpData.Stride + 1];
+                        arrDst[i + 2] = sourceArray[pixx * 3 + pixy * bmpData.Stride + 2];
+                    }
                 }
+                Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
+                bitmap.UnlockBits(bmpData);
             }
-            Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
-            bitmap.UnlockBits(bmpData);
-            formGraphics.DrawImage(bitmap, 100, 120);
         }
-
-        
     }
 }

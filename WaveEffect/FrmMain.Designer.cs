@@ -44,7 +44,7 @@
             this.tbWavelength.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbWavelength.Location = new System.Drawing.Point(137, 0);
-            this.tbWavelength.Maximum = 100;
+            this.tbWavelength.Maximum = 1000;
             this.tbWavelength.Minimum = 1;
             this.tbWavelength.Name = "tbWavelength";
             this.tbWavelength.Size = new System.Drawing.Size(862, 45);

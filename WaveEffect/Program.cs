@@ -1,7 +1,7 @@
-﻿using System;
+﻿//using Oracle.ManagedDataAccess.Client;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 namespace WaveEffect
 {
     static class Program
@@ -14,7 +14,8 @@ namespace WaveEffect
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmMain());
+            Application.Run(new FrmClick());
+            //Application.Run(new FrmMain());
         }
     }
 }
