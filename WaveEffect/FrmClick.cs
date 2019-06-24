@@ -21,6 +21,8 @@ namespace WaveEffect
 
         private byte[] arrDst;// = new byte[sourceArray.Length];
 
+        private byte[] arrTmp;
+
         private byte[] sourceArray;
         public FrmClick()
         {
@@ -42,7 +44,15 @@ namespace WaveEffect
             sourceMap.UnlockBits(bmpData);
 
             arrDst = new byte[sourceArray.Length];
+            arrTmp = new byte[sourceArray.Length];
+
             Array.Copy(sourceArray, arrDst, sourceArray.Length);
+            Array.Copy(sourceArray, arrTmp, sourceArray.Length);
+
+            System.Drawing.Imaging.BitmapData bmpData1 = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);//curBitmap.PixelFormat
+            IntPtr ptr1 = bmpData1.Scan0;
+            Marshal.Copy(sourceArray, 0, ptr1, arrDst.Length);
+            bitmap.UnlockBits(bmpData1);
 
             this.renderThread = new Thread(new ThreadStart(DrawBitmap));
             this.renderThread.IsBackground = true;
@@ -60,32 +70,47 @@ namespace WaveEffect
             {
                 lock (waves)
                 {
-                    for ( int i=0;i<waves.Count;i++)
+                    for (int i = 0; i < waves.Count; i++)
                     {
                         WaveSource wave = waves[i];
-                        Render(wave.x, wave.y, wave.p);
-                        wave.p = wave.p + 10;
-                        if (wave.p > Math.Sqrt(Math.Pow(bitmap.Width, 2) + Math.Pow(bitmap.Height, 2)))
+                        Render(wave.x, wave.y, wave.waveLength, wave.amplitude, wave.p);
+                        formGraphics.DrawImage(bitmap, 0, 0);
+                        wave.p = (int)(wave.p + wave.waveLength);
+                        double p1 = Math.Sqrt(Math.Pow(bitmap.Width - wave.x, 2) + Math.Pow(bitmap.Height - wave.y, 2));
+                        double p2= Math.Sqrt(Math.Pow(bitmap.Width - wave.x, 2) + Math.Pow(0 - wave.y, 2));
+                        double p3 = Math.Sqrt(Math.Pow(0 - wave.x, 2) + Math.Pow(bitmap.Height - wave.y, 2));
+                        double p4 = Math.Sqrt(Math.Pow(0 - wave.x, 2) + Math.Pow(0 - wave.y, 2));
+                        if (wave.p > p1 && wave.p > p2 && wave.p > p3 && wave.p > p4)
                         {
                             waves.Remove(wave);
                         }
+                        //Thread.Sleep(200);
                     }
+                    formGraphics.DrawImage(bitmap, 0, 0);
+
                 }
                 Thread.Sleep(1);
             }
         }
 
-        private void Render(int point_x, int point_y, int p_len)
+        /// <summary>
+        /// 渲染
+        /// </summary>
+        /// <param name="point_x">中心点坐标X</param>
+        /// <param name="point_y">中心点坐标Y</param>
+        /// <param name="p_len">距离中心点长度</param>
+        /// <param name="waveLength">波长</param>
+        /// <param name="amplitude">振幅</param>
+        private void Render(int point_x, int point_y, double waveLength, double amplitude, int p_len)
         {
-            double rate = 5;//bochang
-            double ratio = 8;//zhenfu
             int width = bitmap.Width;
             int height = bitmap.Height;
-            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-            System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);//curBitmap.PixelFormat
-            IntPtr ptr = bmpData.Scan0;
+
             Array.Copy(sourceArray, arrDst, sourceArray.Length);
 
+            #region jizuobiao 
+            //Marshal.Copy(ptr, arrDst, 0, arrDst.Length);
+            //Marshal.Copy(ptr, arrDst, 0, arrDst.Length);
             //int min = (int)(p_len - rate);
             //int max = (int)(p_len + rate);
             //for (double o = 0; o < 6.2831; o = o + 0.003)
@@ -111,35 +136,50 @@ namespace WaveEffect
             //    }
             //}
             //
+            #endregion
+
             for (int j = 0; j < height; j++)
             {
                 for (int i = 0; i < width; i++)
                 {
                     double p = Math.Sqrt(Math.Pow(i - point_x, 2) + Math.Pow(j - point_y, 2));
-                    if (p >= p_len - 4 * rate && p <= p_len + 4 * rate)
+                    if (p >= p_len - waveLength && p <= p_len + waveLength)
                     {
-                        int y = j - point_y;
-                        int x = i - point_x;
-                        if (x > 0 && x < width && y > 0 && y < height)
-                        {
-                            int tranx = (int)(x + x * ratio * Math.Sin(p / rate) / p);
-                            int trany = (int)(y + y * ratio * Math.Sin(p / rate) / p);
-                            int pixx = tranx + point_x;
-                            int pixy = trany + point_y;
+                        #region zhuanhuan
+                        //int y = j - point_y;
+                        //int x = i - point_x;
+                        //int tranx = (int)(x + x * amplitude * Math.Sin(p / waveLength) / p);
+                        //int trany = (int)(y + y * amplitude * Math.Sin(p / waveLength) / p);
+                        //int pixx = tranx + point_x;
+                        //int pixy = trany + point_y;
 
-                            if (pixx > 0 && pixx < width && pixy > 0 && pixy < height)
-                            {
-                                arrDst[i * 3 + j * width * 3] = sourceArray[pixx * 3 + pixy * width * 3];
-                                arrDst[i * 3 + j * width * 3 + 1] = sourceArray[pixx * 3 + pixy * width * 3 + 1];
-                                arrDst[i * 3 + j * width * 3 + 2] = sourceArray[pixx * 3 + pixy * width * 3 + 2];
-                            }
+                        //int pixx = (int)((1 + amplitude * Math.Sin(p / waveLength) / p) * (i - point_x) + point_x);
+                        //int pixy = (int)((1 + amplitude * Math.Sin(p / waveLength) / p) * (j - point_y) + point_y);
+                        #endregion
+
+
+                        int pixx = (int)(p * (i - point_x) / (p + amplitude * Math.Sin(p / waveLength)) + point_x);
+                        int pixy = (int)(p * (j - point_y) / (p + amplitude * Math.Sin(p / waveLength)) + point_y);
+
+                        if (pixx > 0 && pixx < width && pixy > 0 && pixy < height)
+                        {
+                            arrDst[i * 3 + j * width * 3] = arrTmp[pixx * 3 + pixy * width * 3];
+                            arrDst[i * 3 + j * width * 3 + 1] = arrTmp[pixx * 3 + pixy * width * 3 + 1];
+                            arrDst[i * 3 + j * width * 3 + 2] = arrTmp[pixx * 3 + pixy * width * 3 + 2];
                         }
+
                     }
                 }
             }
+            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);//curBitmap.PixelFormat
+            IntPtr ptr = bmpData.Scan0;
+            //bmpData.
             Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
+            Marshal.Copy(ptr, arrTmp, 0, arrDst.Length);
             bitmap.UnlockBits(bmpData);
-            formGraphics.DrawImage(bitmap, 0, 0);
+            //formGraphics.DrawImage(bitmap, 0, 0);
+
         }
 
         private void FrmClick_Load(object sender, EventArgs e)
@@ -151,7 +191,7 @@ namespace WaveEffect
         {
             lock (waves)
             {
-                waves.Add(new WaveSource(e.X, e.Y, 0));
+                waves.Add(new WaveSource(e.X, e.Y, 5.0, 8.0, 0));
             }
         }
     }
@@ -162,11 +202,17 @@ namespace WaveEffect
         public int y { get; set; }
         public int p { get; set; }
 
-        public WaveSource(int _x,int _y,int _p)
+        public double waveLength { get; set; }
+
+        public double amplitude { get; set; }
+
+        public WaveSource(int _x, int _y, double _waveLength, double _amplitude, int _p)
         {
             this.x = _x;
             this.y = _y;
             this.p = _p;
+            this.waveLength = _waveLength;
+            this.amplitude = _amplitude;
         }
     }
 }

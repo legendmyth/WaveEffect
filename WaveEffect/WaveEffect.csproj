@@ -56,6 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrmInterference .cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmInterference .Designer.cs">
+      <DependentUpon>FrmInterference .cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmClick.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -70,6 +76,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FrmInterference .resx">
+      <DependentUpon>FrmInterference .cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmClick.resx">
       <DependentUpon>FrmClick.cs</DependentUpon>
     </EmbeddedResource>
