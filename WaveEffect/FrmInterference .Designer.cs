@@ -39,7 +39,8 @@
             this.Text = "Form1";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Shown += new System.EventHandler(this.FrmInterference_Shown);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FrmClick_MouseDown);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FrmInterference_MouseClick);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FrmInterference_MouseMove);
             this.ResumeLayout(false);
 
         }

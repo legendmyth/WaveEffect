@@ -52,8 +52,12 @@ namespace WaveEffect
         {
             while (true)
             {
-                
+                DateTime dt = DateTime.Now;
                 Render(waves);
+                DateTime time = DateTime.Now;
+                TimeSpan timeSpan = time.Subtract(dt);
+                //Console.WriteLine("Render耗时：" + timeSpan.TotalMilliseconds);
+
                 Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
                 System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);//curBitmap.PixelFormat
                 IntPtr ptr = bmpData.Scan0;
@@ -61,14 +65,16 @@ namespace WaveEffect
                 bitmap.UnlockBits(bmpData);
                 formGraphics.DrawImage(bitmap, 0, 0);
 
+                //Console.WriteLine("绘图耗时：" + DateTime.Now.Subtract(time).TotalMilliseconds);
+
                 for (int i = 0; i < waves.Count; i++)
                 {
                     WaveSource wave = waves[i];
                     wave.p = (int)(wave.p + wave.waveLength * 0.5);
-                    double p1 = Math.Sqrt(Math.Pow(bitmap.Width - wave.x, 2) + Math.Pow(bitmap.Height - wave.y, 2));
-                    double p2 = Math.Sqrt(Math.Pow(bitmap.Width - wave.x, 2) + Math.Pow(0 - wave.y, 2));
-                    double p3 = Math.Sqrt(Math.Pow(0 - wave.x, 2) + Math.Pow(bitmap.Height - wave.y, 2));
-                    double p4 = Math.Sqrt(Math.Pow(0 - wave.x, 2) + Math.Pow(0 - wave.y, 2));
+                    double p1 = Math.Sqrt((bitmap.Width - wave.x)* (bitmap.Width - wave.x) + (bitmap.Height - wave.y)* (bitmap.Height - wave.y));
+                    double p2 = Math.Sqrt((bitmap.Width - wave.x)* (bitmap.Width - wave.x) + wave.y* wave.y);
+                    double p3 = Math.Sqrt(wave.x* wave.x + (bitmap.Height - wave.y)*(bitmap.Height - wave.y));
+                    double p4 = Math.Sqrt(wave.x * wave.x + wave.y * wave.y);
                     if (wave.p > p1 && wave.p > p2 && wave.p > p3 && wave.p > p4)
                     {
                         waves.Remove(wave);
@@ -84,8 +90,9 @@ namespace WaveEffect
         {
             int width = bitmap.Width;
             int height = bitmap.Height;
+            DateTime t1 = DateTime.Now;
             Array.Copy(sourceArray, arrDst, sourceArray.Length);
-
+            DateTime t2 = DateTime.Now;
             for (int k = 0; k < waves.Count; k++)
             {
                 WaveSource wave = waves[k];
@@ -93,8 +100,10 @@ namespace WaveEffect
                 {
                     for (int i = 0; i < width; i++)
                     {
-                        double p = Math.Sqrt(Math.Pow(i - wave.x, 2) + Math.Pow(j - wave.y, 2));
-                        if (p >= wave.p - wave.waveLength * 0.5 && p <= wave.p + wave.waveLength * 0.5)
+                        double p = Math.Sqrt((i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y));
+                        double min = wave.p - wave.waveLength * 0.5;
+                        double max = wave.p + wave.waveLength * 0.5;
+                        if (p >= min && p <= max)
                         {
                             int pixx = (int)((1 + wave.amplitude * Math.Sin(p / wave.waveLength) / p) * (i - wave.x) + wave.x);
                             int pixy = (int)((1 + wave.amplitude * Math.Sin(p / wave.waveLength) / p) * (j - wave.y) + wave.y);
@@ -112,16 +121,28 @@ namespace WaveEffect
                 }
                 Array.Copy(arrDst, arrTmp, arrDst.Length);
             }
-            
+            DateTime t3 = DateTime.Now;
+            //Console.WriteLine("t2-t1:" + t2.Subtract(t1).TotalMilliseconds + "||t3-t2:" + t3.Subtract(t2).TotalMilliseconds);
 
         }
 
-        private void FrmClick_MouseDown(object sender, MouseEventArgs e)
+        private void FrmInterference_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.X % 4 == 0 && e.Y % 4 == 0)
+            {
+                lock (waves)
+                {
+                    waves.Add(new WaveSource(e.X, e.Y, 10, 5, 0));
+                }
+            }
+        }
+
+        private void FrmInterference_MouseClick(object sender, MouseEventArgs e)
         {
             lock (waves)
             {
-                waves.Add(new WaveSource(e.X, e.Y, 20, 5, 0));
+                waves.Add(new WaveSource(e.X, e.Y, 10, 5, 0));
             }
-        }        
+        }
     }
 }
