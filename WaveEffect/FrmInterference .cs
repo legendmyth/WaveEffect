@@ -19,6 +19,7 @@ namespace WaveEffect
         private byte[] arrDst;
         private byte[] arrTmp;
         private byte[] sourceArray;
+        private Rectangle bitmapArea;
         public FrmInterference()
         {
             InitializeComponent();
@@ -44,6 +45,7 @@ namespace WaveEffect
             IntPtr ptr1 = bmpData1.Scan0;
             Marshal.Copy(sourceArray, 0, ptr1, arrDst.Length);
             bitmap.UnlockBits(bmpData1);
+            bitmapArea = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
             this.renderThread = new Thread(new ThreadStart(DrawBitmap));
             this.renderThread.IsBackground = true;
             this.renderThread.Start();
@@ -80,8 +82,9 @@ namespace WaveEffect
                         waves.Remove(wave);
                     }
                 }
-                
-                Thread.Sleep(1);
+
+                int times = (int)DateTime.Now.Subtract(dt).TotalMilliseconds > 30 ? 1 : 30 - (int)DateTime.Now.Subtract(dt).TotalMilliseconds;
+                Thread.Sleep(times);
             }
         }
 
@@ -128,7 +131,7 @@ namespace WaveEffect
 
         private void FrmInterference_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.X % 4 == 0 && e.Y % 4 == 0)
+            if (e.X % 4 == 0 && e.Y % 4 == 0 && e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
                 lock (waves)
                 {
@@ -139,9 +142,13 @@ namespace WaveEffect
 
         private void FrmInterference_MouseClick(object sender, MouseEventArgs e)
         {
-            lock (waves)
+            if (e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                waves.Add(new WaveSource(e.X, e.Y, 10, 5, 0));
+
+                lock (waves)
+                {
+                    waves.Add(new WaveSource(e.X, e.Y, 10, 5, 0));
+                }
             }
         }
     }
