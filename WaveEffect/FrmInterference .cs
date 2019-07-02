@@ -20,6 +20,7 @@ namespace WaveEffect
         private byte[] arrTmp;
         private byte[] sourceArray;
         private Rectangle bitmapArea;
+        System.Random random = null;
         public FrmInterference()
         {
             InitializeComponent();
@@ -27,8 +28,9 @@ namespace WaveEffect
 
         private void FrmInterference_Shown(object sender, EventArgs e)
         {
+            random = new Random(DateTime.Now.Millisecond);
             formGraphics = this.CreateGraphics();
-            sourceMap = global::WaveEffect.Properties.Resources.img7;
+            sourceMap = global::WaveEffect.Properties.Resources.img13;
             bitmap = new Bitmap(sourceMap.Width, sourceMap.Height);
             Rectangle rect = new Rectangle(0, 0, sourceMap.Width, sourceMap.Height);
             System.Drawing.Imaging.BitmapData bmpData = sourceMap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
@@ -108,8 +110,8 @@ namespace WaveEffect
                         double max = wave.p + wave.waveLength * 0.5;
                         if (p >= min && p <= max)
                         {
-                            int pixx = (int)((1 + wave.amplitude * Math.Sin(p / wave.waveLength) / p) * (i - wave.x) + wave.x);
-                            int pixy = (int)((1 + wave.amplitude * Math.Sin(p / wave.waveLength) / p) * (j - wave.y) + wave.y);
+                            int pixx = (int)((1 + wave.amplitude * (1 + Math.Sin(p / wave.waveLength)) / p) * (i - wave.x) + wave.x);
+                            int pixy = (int)((1 + wave.amplitude * (1 + Math.Sin(p / wave.waveLength)) / p) * (j - wave.y) + wave.y);
                             //int pixx = (int)(p * (i - wave.x) / (p + wave.amplitude * Math.Sin(p / wave.waveLength)) + wave.x);
                             //int pixy = (int)(p * (j - wave.y) / (p + wave.amplitude * Math.Sin(p / wave.waveLength)) + wave.y);
                             if (pixx > 0 && pixx < width && pixy > 0 && pixy < height)
@@ -131,7 +133,8 @@ namespace WaveEffect
 
         private void FrmInterference_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.X % 4 == 0 && e.Y % 4 == 0 && e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
+            int tmp = random.Next(1, 10);
+            if (tmp == 1 && e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
                 lock (waves)
                 {

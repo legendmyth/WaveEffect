@@ -63,6 +63,46 @@ namespace WaveEffect.Properties {
         /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
+        internal static System.Drawing.Bitmap img10 {
+            get {
+                object obj = ResourceManager.GetObject("img10", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap img11 {
+            get {
+                object obj = ResourceManager.GetObject("img11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap img12 {
+            get {
+                object obj = ResourceManager.GetObject("img12", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap img13 {
+            get {
+                object obj = ResourceManager.GetObject("img13", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
         internal static System.Drawing.Bitmap img6 {
             get {
                 object obj = ResourceManager.GetObject("img6", resourceCulture);
@@ -76,6 +116,26 @@ namespace WaveEffect.Properties {
         internal static System.Drawing.Bitmap img7 {
             get {
                 object obj = ResourceManager.GetObject("img7", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap img8 {
+            get {
+                object obj = ResourceManager.GetObject("img8", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap img9 {
+            get {
+                object obj = ResourceManager.GetObject("img9", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
