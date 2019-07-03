@@ -14,7 +14,7 @@ namespace WaveEffect
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmInterference());
+            Application.Run(new FrmMultiThread());
             //Application.Run(new FrmClick());
             //Application.Run(new FrmMain());
         }

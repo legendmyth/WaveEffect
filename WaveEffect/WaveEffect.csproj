@@ -56,6 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrmMultiThread.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMultiThread.Designer.cs">
+      <DependentUpon>FrmMultiThread.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmInterference .cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,6 +82,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FrmMultiThread.resx">
+      <DependentUpon>FrmMultiThread.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmInterference .resx">
       <DependentUpon>FrmInterference .cs</DependentUpon>
     </EmbeddedResource>
