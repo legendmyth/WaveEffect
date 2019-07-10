@@ -12,9 +12,10 @@ namespace WaveEffect
         [STAThread]
         static void Main()
         {
+           
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmMultiThread());
+            Application.Run(new FrmC());
             //Application.Run(new FrmClick());
             //Application.Run(new FrmMain());
         }

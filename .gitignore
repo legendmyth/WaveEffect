@@ -1,3 +1,8 @@
 /WaveEffect/bin
 /WaveEffect/obj
 /.vs
+/wave.c/wavemain.o
+/wave.c/libwave.a
+/wave.c/libwave.def
+/wave.c/Makefile.win
+/wave.c/wave.dll

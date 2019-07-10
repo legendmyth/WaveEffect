@@ -196,23 +196,5 @@ namespace WaveEffect
         }
     }
 
-    public class WaveSource
-    {
-        public int x { get; set; }
-        public int y { get; set; }
-        public int p { get; set; }
-
-        public double waveLength { get; set; }
-
-        public double amplitude { get; set; }
-
-        public WaveSource(int _x, int _y, double _waveLength, double _amplitude, int _p)
-        {
-            this.x = _x;
-            this.y = _y;
-            this.p = _p;
-            this.waveLength = _waveLength;
-            this.amplitude = _amplitude;
-        }
-    }
+    
 }
