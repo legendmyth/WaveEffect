@@ -10,7 +10,7 @@ namespace WaveEffect
 {
     public partial class FrmC : Form
     {
-        private List<WaveSourceC> waves = new List<WaveSourceC>();
+        private List<WaveSource> waves = new List<WaveSource>();
 
         /// <summary>
         /// 渲染线程
@@ -64,7 +64,7 @@ namespace WaveEffect
             this.renderThread.Start();
             this.bitmapHeight = bmpData.Height;
             this.bitmapWidth = bmpData.Width;
-            bitmapVector = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VectorC)) * bitmapHeight * bitmapWidth);
+            bitmapVector = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Vector)) * bitmapHeight * bitmapWidth);
 
             this.calcThread = new Thread(new ThreadStart(Calc));
             this.calcThread.IsBackground = true;
@@ -107,7 +107,7 @@ namespace WaveEffect
         /// <param name="wave"></param>
         public void WaveThreadMethod(Object waveObj)
         {
-            WaveSourceC wave = (WaveSourceC)waveObj;
+            WaveSource wave = (WaveSource)waveObj;
             SingleWaveCalc(wave, bitmapWidth, bitmapHeight, bitmapVector,30);
         }
 
@@ -116,12 +116,7 @@ namespace WaveEffect
             int tmp = random.Next(1, 10);
             if (tmp == 1 && e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                WaveSourceC wave = new WaveSourceC();
-                wave.x = e.X;
-                wave.y = e.Y;
-                wave.p = 0;
-                wave.amplitude = 5;
-                wave.waveLength = 10;
+                WaveSource wave = new WaveSource(e.X, e.Y, 10.0, 5.0, 0);
                 Thread waveThread = new Thread(new ParameterizedThreadStart(WaveThreadMethod));
                 waveThread.IsBackground = true;
                 waveThread.Start(wave);
@@ -132,12 +127,7 @@ namespace WaveEffect
         {
             if (e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                WaveSourceC wave = new WaveSourceC();
-                wave.x = e.X;
-                wave.y = e.Y;
-                wave.p = 0;
-                wave.amplitude = 5;
-                wave.waveLength = 10;
+                WaveSource wave = new WaveSource(e.X, e.Y, 10.0, 5.0, 0);                
                 Thread waveThread = new Thread(new ParameterizedThreadStart(WaveThreadMethod));
                 waveThread.IsBackground = true;
                 waveThread.Start(wave);
@@ -148,6 +138,6 @@ namespace WaveEffect
         extern static void CalcMapTransform(int height, int width, IntPtr vectorPtr, byte[] arrDst, byte[] arrSource);
 
         [DllImport("wave.dll")]
-        extern static void SingleWaveCalc(WaveSourceC wave, int width, int height, IntPtr vectorPtr,int delay);
+        extern static void SingleWaveCalc(WaveSource wave, int width, int height, IntPtr vectorPtr,int delay);
     }
 }

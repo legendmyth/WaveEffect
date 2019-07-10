@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace WaveEffect
 {
+    [StructLayout(LayoutKind.Explicit)]
     public class WaveSource
     {
-        public int x { get; set; }
-        public int y { get; set; }
-        public int p { get; set; }
+        [FieldOffset(0)]
+        public int x;
 
-        public double waveLength { get; set; }
+        [FieldOffset(4)]
+        public int y;
 
-        public double amplitude { get; set; }
+        [FieldOffset(8)]
+        public int p;
+
+        [FieldOffset(16)]//为了兼容C语言内存对齐
+        public double waveLength;
+
+        [FieldOffset(24)]
+        public double amplitude;
 
         public WaveSource(int _x, int _y, double _waveLength, double _amplitude, int _p)
         {
@@ -22,14 +31,5 @@ namespace WaveEffect
             this.waveLength = _waveLength;
             this.amplitude = _amplitude;
         }
-    }
-
-    public struct WaveSourceC
-    {
-        public int x;
-        public int y;
-        public int p;
-        public double waveLength;
-        public double amplitude;
     }
 }

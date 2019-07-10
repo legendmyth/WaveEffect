@@ -30,6 +30,11 @@ DLLIMPORT void CalcMapTransform(int height,int width, Vector *vector,unsigned  c
 
 DLLIMPORT void SingleWaveCalc(Wave wave,int width,int height,Vector* vector,int delay)
 {
+//	char *msg=malloc(200);
+//	sprintf(msg,"wave.x:%d,wave.y:%d,wave.p:%d,,wave.amplitude:%f,wave.waveLength:%f,sizeof(wave):%d,sizeof(double):%d,sizeof(vector):%d",wave.x,wave.y,wave.p,wave.amplitude,wave.waveLength,sizeof(Wave),sizeof(double),sizeof(Vector));
+//	MessageBox(0,msg,"Hi",MB_ICONINFORMATION);
+	//printf(msg);
+	//free(msg); 
 	double p1 = sqrt((width - wave.x) * (width - wave.x) + (height - wave.y) * (height - wave.y));
     double p2 = sqrt((width - wave.x) * (width - wave.x) + wave.y * wave.y);
     double p3 = sqrt((wave.x * wave.x)+ (height - wave.y) * (height - wave.y));
