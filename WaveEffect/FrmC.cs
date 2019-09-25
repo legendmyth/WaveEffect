@@ -84,7 +84,7 @@ namespace WaveEffect
                 Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
                 bitmap.UnlockBits(bmpData);
                 formGraphics.DrawImage(bitmap, 0, 0);
-                Thread.Sleep(30);
+                Thread.Sleep(16);
             }
         }
 
@@ -97,7 +97,7 @@ namespace WaveEffect
             while (true)
             {
                 CalcMapTransform(this.bitmapHeight, this.bitmapWidth, this.bitmapVector, arrDst, sourceArray);
-                Thread.Sleep(10);
+                Thread.Sleep(1);
             }
         }
 

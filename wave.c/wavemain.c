@@ -75,7 +75,7 @@ DLLIMPORT void SingleWaveCalc(Wave wave,int width,int height,Vector* vector,int 
                 
             }
         }
-        wave.p = wave.p + (int)(wave.waveLength * 0.5);
+        wave.p = wave.p + wave.waveLength;
         
     }
 
