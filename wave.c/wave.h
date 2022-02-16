@@ -22,10 +22,15 @@ typedef struct{
 
 DLLIMPORT void HelloWorld();
 
-DLLIMPORT void CalcMapTransform(int height,int width,Vector *vector,unsigned  char *arrDes,unsigned char *arrSource);
+DLLIMPORT void InitWaves(Wave *waves,int waveCnt);
+
+DLLIMPORT void AddWave(Wave *waves,int waveCnt,Wave wave);
+
+DLLIMPORT void CalcMapTransform(int height,int width,Vector *vector,unsigned char *arrDes,unsigned char *arrSource);
 
 DLLIMPORT void SingleWaveCalc(Wave wave,int width,int height,Vector *vector,int delay);
 
-
+DLLIMPORT void MultiWaveCalc(Wave *waves,int width,int height,Vector* vector,int waveSpeed,int waveCnt,int delay);
 
 #endif
+

@@ -7,3 +7,9 @@
 /wave.c/Makefile.win
 /wave.c/wave.dll
 /wave.c/wave.layout
+wave.c/Makefile.win
+wave.c/libwave.a
+wave.c/libwave.def
+wave.c/libwave.a
+wave.c/wave.layout
+wave.c/Makefile.win
