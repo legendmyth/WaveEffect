@@ -17,13 +17,13 @@ namespace WaveEffect
         [FieldOffset(8)]
         public int p;
 
-        [FieldOffset(16)]//为了兼容C语言内存对齐
-        public double waveLength;
+        [FieldOffset(12)]//为了兼容C语言内存对齐
+        public float waveLength;
 
-        [FieldOffset(24)]
-        public double amplitude;
+        [FieldOffset(16)]
+        public float amplitude;
 
-        public WaveSource(int _x, int _y, double _waveLength, double _amplitude, int _p)
+        public WaveSource(int _x, int _y, float _waveLength, float _amplitude, int _p)
         {
             this.x = _x;
             this.y = _y;

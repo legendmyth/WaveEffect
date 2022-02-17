@@ -39,22 +39,22 @@ DLLIMPORT void CalcMapTransform(int height,int width, Vector *vector,unsigned  c
 
 DLLIMPORT void SingleWaveCalc(Wave wave,int width,int height,Vector* vector,int delay) {
 //	char *msg=malloc(200);
-//	sprintf(msg,"wave.x:%d,wave.y:%d,wave.p:%d,,wave.amplitude:%f,wave.waveLength:%f,sizeof(wave):%d,sizeof(double):%d,sizeof(vector):%d",wave.x,wave.y,wave.p,wave.amplitude,wave.waveLength,sizeof(Wave),sizeof(double),sizeof(Vector));
+//	sprintf(msg,"wave.x:%d,wave.y:%d,wave.p:%d,,wave.amplitude:%f,wave.waveLength:%f,sizeof(wave):%d,sizeof(float):%d,sizeof(vector):%d",wave.x,wave.y,wave.p,wave.amplitude,wave.waveLength,sizeof(Wave),sizeof(float),sizeof(Vector));
 //	MessageBox(0,msg,"Hi",MB_ICONINFORMATION);
 	//printf(msg);
 	//free(msg);
-	double p1 = sqrt((width - wave.x) * (width - wave.x) + (height - wave.y) * (height - wave.y));
-	double p2 = sqrt((width - wave.x) * (width - wave.x) + wave.y * wave.y);
-	double p3 = sqrt((wave.x * wave.x)+ (height - wave.y) * (height - wave.y));
-	double p4 = sqrt((wave.x * wave.x) + (wave.y * wave.y));
+	float p1 = sqrt((width - wave.x) * (width - wave.x) + (height - wave.y) * (height - wave.y));
+	float p2 = sqrt((width - wave.x) * (width - wave.x) + wave.y * wave.y);
+	float p3 = sqrt((wave.x * wave.x)+ (height - wave.y) * (height - wave.y));
+	float p4 = sqrt((wave.x * wave.x) + (wave.y * wave.y));
 	while (wave.p < p1 || wave.p < p2 || wave.p < p3 || wave.p < p4) {
-		double min = (wave.p - wave.waveLength)* (wave.p - wave.waveLength);
-		double max = (wave.p + wave.waveLength)* (wave.p + wave.waveLength);
+		float min = (wave.p - wave.waveLength)* (wave.p - wave.waveLength);
+		float max = (wave.p + wave.waveLength)* (wave.p + wave.waveLength);
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				double p = (i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y);
+				float p = (i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y);
 				if (p >= min && p <= max) {
-					double p0 = sqrt(p);
+					float p0 = sqrt(p);
 					vector[j*width + i].x += (int)(wave.amplitude * sin(p0 / wave.waveLength) * (i - wave.x) / p0);
 					vector[j*width + i].y += (int)(wave.amplitude * sin(p0 / wave.waveLength) * (j - wave.y) / p0);
 				}
@@ -65,10 +65,10 @@ DLLIMPORT void SingleWaveCalc(Wave wave,int width,int height,Vector* vector,int 
 		Sleep(delay);
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				double p = (i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y);
+				float p = (i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y);
 
 				if (p >= min && p <= max) {
-					double p0 = sqrt(p);
+					float p0 = sqrt(p);
 					vector[j*width + i].x -= (int)(wave.amplitude * sin(p0 / wave.waveLength) * (i - wave.x) / p0);
 					vector[j*width + i].y -= (int)(wave.amplitude * sin(p0 / wave.waveLength) * (j - wave.y) / p0);
 				}
@@ -87,18 +87,18 @@ DLLIMPORT void MultiWaveCalc(Wave *waves,int width,int height,Vector* vector,int
 			if(waves[cnt].amplitude == 0.0f) {
 				continue;
 			}
-			double p1 = sqrt((width - waves[cnt].x) * (width - waves[cnt].x) + (height - waves[cnt].y) * (height - waves[cnt].y));
-			double p2 = sqrt((width - waves[cnt].x) * (width - waves[cnt].x) + waves[cnt].y * waves[cnt].y);
-			double p3 = sqrt((waves[cnt].x * waves[cnt].x)+ (height - waves[cnt].y) * (height - waves[cnt].y));
-			double p4 = sqrt((waves[cnt].x * waves[cnt].x) + (waves[cnt].y * waves[cnt].y));
+			float p1 = sqrt((width - waves[cnt].x) * (width - waves[cnt].x) + (height - waves[cnt].y) * (height - waves[cnt].y));
+			float p2 = sqrt((width - waves[cnt].x) * (width - waves[cnt].x) + waves[cnt].y * waves[cnt].y);
+			float p3 = sqrt((waves[cnt].x * waves[cnt].x)+ (height - waves[cnt].y) * (height - waves[cnt].y));
+			float p4 = sqrt((waves[cnt].x * waves[cnt].x) + (waves[cnt].y * waves[cnt].y));
 			if (waves[cnt].p < p1 || waves[cnt].p < p2 || waves[cnt].p < p3 || waves[cnt].p < p4) {
-				double min = (waves[cnt].p - waves[cnt].waveLength)* (waves[cnt].p - waves[cnt].waveLength);
-				double max = (waves[cnt].p + waves[cnt].waveLength)* (waves[cnt].p + waves[cnt].waveLength);
+				float min = (waves[cnt].p - waves[cnt].waveLength)* (waves[cnt].p - waves[cnt].waveLength);
+				float max = (waves[cnt].p + waves[cnt].waveLength)* (waves[cnt].p + waves[cnt].waveLength);
 				for (int j = 0; j < height; j++) {
 					for (int i = 0; i < width; i++) {
-						double p = (i - waves[cnt].x) * (i - waves[cnt].x) + (j - waves[cnt].y) * (j - waves[cnt].y);
+						float p = (i - waves[cnt].x) * (i - waves[cnt].x) + (j - waves[cnt].y) * (j - waves[cnt].y);
 						if (p >= min && p <= max) {
-							double p0 = sqrt(p);
+							float p0 = sqrt(p);
 							vector[j*width + i].x += (int)(waves[cnt].amplitude * sin(p0 / waves[cnt].waveLength) * (i - waves[cnt].x) / p0);
 							vector[j*width + i].y += (int)(waves[cnt].amplitude * sin(p0 / waves[cnt].waveLength) * (j - waves[cnt].y) / p0);
 						}
@@ -114,13 +114,13 @@ DLLIMPORT void MultiWaveCalc(Wave *waves,int width,int height,Vector* vector,int
 			if(waves[cnt].amplitude == 0.0f) {
 				continue;
 			}
-			double min = (waves[cnt].p - waves[cnt].waveLength)* (waves[cnt].p - waves[cnt].waveLength);
-			double max = (waves[cnt].p + waves[cnt].waveLength)* (waves[cnt].p + waves[cnt].waveLength);
+			float min = (waves[cnt].p - waves[cnt].waveLength)* (waves[cnt].p - waves[cnt].waveLength);
+			float max = (waves[cnt].p + waves[cnt].waveLength)* (waves[cnt].p + waves[cnt].waveLength);
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {
-					double p = (i - waves[cnt].x) * (i - waves[cnt].x) + (j - waves[cnt].y) * (j - waves[cnt].y);
+					float p = (i - waves[cnt].x) * (i - waves[cnt].x) + (j - waves[cnt].y) * (j - waves[cnt].y);
 					if (p >= min && p <= max) {
-						double p0 = sqrt(p);
+						float p0 = sqrt(p);
 						vector[j*width + i].x -= (int)(waves[cnt].amplitude * sin(p0 / waves[cnt].waveLength) * (i - waves[cnt].x) / p0);
 						vector[j*width + i].y -= (int)(waves[cnt].amplitude * sin(p0 / waves[cnt].waveLength) * (j - waves[cnt].y) / p0);
 					}

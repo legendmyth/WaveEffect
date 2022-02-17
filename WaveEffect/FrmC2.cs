@@ -12,7 +12,7 @@ namespace WaveEffect
     {
         private IntPtr waves;
 
-        private int maxWaveSize = 30;
+        private int maxWaveSize = 100;
 
         /// <summary>
         /// 渲染线程
@@ -127,7 +127,7 @@ namespace WaveEffect
         {
             if (e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                WaveSource waveSource = new WaveSource(e.X, e.Y, 10.0, 5.0, 0);
+                WaveSource waveSource = new WaveSource(e.X, e.Y, 10.0f, 5.0f, 0);
                 AddWave(this.waves, maxWaveSize, waveSource);
             }
         }

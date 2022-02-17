@@ -16,8 +16,8 @@ typedef struct{
 	int x;
     int y;
     int p;
-    double waveLength;
-    double amplitude;
+    float waveLength;
+    float amplitude;
 }Wave;
 
 DLLIMPORT void HelloWorld();

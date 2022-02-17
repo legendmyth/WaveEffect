@@ -15,7 +15,7 @@ namespace WaveEffect
            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmC2());
+            Application.Run(new FrmC());
             //Application.Run(new FrmC());
             //Application.Run(new FrmClick());
             //Application.Run(new FrmMain());

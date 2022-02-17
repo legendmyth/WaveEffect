@@ -84,7 +84,7 @@ namespace WaveEffect
                 Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
                 bitmap.UnlockBits(bmpData);
                 formGraphics.DrawImage(bitmap, 0, 0);
-                Thread.Sleep(16);
+                Thread.Sleep(5);
             }
         }
 
@@ -116,7 +116,7 @@ namespace WaveEffect
             int tmp = random.Next(1, 10);
             if (tmp == 1 && e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                WaveSource wave = new WaveSource(e.X, e.Y, 10.0, 5.0, 0);
+                WaveSource wave = new WaveSource(e.X, e.Y, 20.0f, 5.0f, 0);
                 Thread waveThread = new Thread(new ParameterizedThreadStart(WaveThreadMethod));
                 waveThread.IsBackground = true;
                 waveThread.Start(wave);
@@ -127,7 +127,7 @@ namespace WaveEffect
         {
             if (e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                WaveSource wave = new WaveSource(e.X, e.Y, 10.0, 5.0, 0);                
+                WaveSource wave = new WaveSource(e.X, e.Y, 10.0f, 5.0f, 0);                
                 Thread waveThread = new Thread(new ParameterizedThreadStart(WaveThreadMethod));
                 waveThread.IsBackground = true;
                 waveThread.Start(wave);

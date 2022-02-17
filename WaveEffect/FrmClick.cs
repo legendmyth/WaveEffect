@@ -191,7 +191,7 @@ namespace WaveEffect
         {
             lock (waves)
             {
-                waves.Add(new WaveSource(e.X, e.Y, 5.0, 8.0, 0));
+                waves.Add(new WaveSource(e.X, e.Y, 5.0f, 8.0f, 0));
             }
         }
     }
