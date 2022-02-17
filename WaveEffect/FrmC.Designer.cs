@@ -30,15 +30,17 @@
         {
             this.SuspendLayout();
             // 
-            // FrmMultiThread
+            // FrmC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(504, 348);
-            this.Name = "FrmMultiThread";
+            this.ClientSize = new System.Drawing.Size(446, 412);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "FrmC";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.Shown += new System.EventHandler(this.FrmMultiThread_Shown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmC_KeyDown);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FrmMultiThread_MouseClick);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FrmMultiThread_MouseMove);
             this.ResumeLayout(false);

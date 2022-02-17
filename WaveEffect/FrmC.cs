@@ -11,11 +11,13 @@ namespace WaveEffect
     public partial class FrmC : Form
     {
         private List<WaveSource> waves = new List<WaveSource>();
-
+        AtomicInt waveCnt = new AtomicInt(0);
         /// <summary>
         /// 渲染线程
         /// </summary>
         private Thread renderThread;
+
+        private Thread renderVectorThread;
 
         /// <summary>
         /// 向量转换线程
@@ -42,9 +44,16 @@ namespace WaveEffect
         {
             random = new Random(DateTime.Now.Millisecond);
             formGraphics = this.CreateGraphics();
-            Bitmap sourceMap = global::WaveEffect.Properties.Resources.img13;
+            //Bitmap sourceMap = global::WaveEffect.Properties.Resources.img13;
 
-
+            
+            Bitmap sourceMap = new Bitmap(this.Width, this.Height);
+            using (Graphics graphics = Graphics.FromImage(sourceMap))
+            {
+                graphics.CopyFromScreen(this.Location.X, this.Location.Y, 0, 0, new Size(this.Width,this.Height));
+                sourceMap.Save("1.png", ImageFormat.Png);
+            }
+            
             bitmap = new Bitmap(sourceMap.Width, sourceMap.Height);
 
             Rectangle rect = new Rectangle(0, 0, sourceMap.Width, sourceMap.Height);
@@ -69,6 +78,12 @@ namespace WaveEffect
             this.calcThread = new Thread(new ThreadStart(Calc));
             this.calcThread.IsBackground = true;
             this.calcThread.Start();
+
+            this.renderVectorThread = new Thread(new ThreadStart(DrawVector));
+            this.renderVectorThread.IsBackground = true;
+            this.renderVectorThread.Start();
+
+            
         }
 
         /// <summary>
@@ -78,15 +93,73 @@ namespace WaveEffect
         {
             while (true)
             {
-                Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-                System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);//curBitmap.PixelFormat
-                IntPtr ptr = bmpData.Scan0;
-                Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
-                bitmap.UnlockBits(bmpData);
-                formGraphics.DrawImage(bitmap, 0, 0);
+                lock (locker)
+                {
+                    if (render)
+                    {
+                        Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+                        System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);//curBitmap.PixelFormat
+                        IntPtr ptr = bmpData.Scan0;
+                        Marshal.Copy(arrDst, 0, ptr, arrDst.Length);
+                        bitmap.UnlockBits(bmpData);
+                        formGraphics.DrawImage(bitmap, 0, 0);
+                    }
+
+                }
+                if (waveCnt.Get() < 1)
+                {
+
+                    for (int i = 0; i < bitmapHeight; i++)
+                    {
+                        for (int j = 0; j < bitmapWidth; j++)
+                        {
+                            Marshal.WriteInt32(this.bitmapVector, (i * bitmapWidth + j) * Marshal.SizeOf(typeof(Vector)), 0);
+                            Marshal.WriteInt32(this.bitmapVector, (i * bitmapWidth + j) * Marshal.SizeOf(typeof(Vector)) + 4, 0);
+                        }
+                    }
+                }
                 Thread.Sleep(5);
             }
         }
+        private object locker = new object();
+
+        private void DrawVector()
+        {
+            while (true)
+            {
+                lock (locker)
+                {
+                    if (!render)
+                    {
+                        Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+                        System.Drawing.Imaging.BitmapData bmpData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+                        IntPtr ptr = bmpData.Scan0;
+                        for (int i = 0; i < bitmapHeight; i++)
+                        {
+                            for (int j = 0; j < bitmapWidth; j++)
+                            {
+                                int x = Marshal.ReadInt32(bitmapVector, (i * bitmapWidth + j) * Marshal.SizeOf(typeof(Vector)));
+                                int y = Marshal.ReadInt32(bitmapVector, (i * bitmapWidth + j) * Marshal.SizeOf(typeof(Vector)) + 4);
+                                byte r = (byte)(x + 128);
+                                byte g = (byte)(y + 128);
+                                byte b = 128;
+                                Marshal.WriteByte(ptr, (i * bitmapWidth + j) * 3, r);
+                                Marshal.WriteByte(ptr, (i * bitmapWidth + j) * 3 + 1, g);
+                                Marshal.WriteByte(ptr, (i * bitmapWidth + j) * 3 + 2, b);
+                                //Marshal.WriteByte(ptr, (i * bitmapWidth + j) * 3 + 3, alpha);
+                            }
+                        }
+                        bitmap.UnlockBits(bmpData);
+                        formGraphics.DrawImage(bitmap, 0, 0);
+                    }
+                    
+                }
+                Thread.Sleep(5);
+            }
+
+        }
+
+        
 
 
         /// <summary>
@@ -108,7 +181,9 @@ namespace WaveEffect
         public void WaveThreadMethod(Object waveObj)
         {
             WaveSource wave = (WaveSource)waveObj;
-            SingleWaveCalc(wave, bitmapWidth, bitmapHeight, bitmapVector,30);
+            waveCnt.GetAndAdd(1);
+            SingleWaveCalc(wave, bitmapWidth, bitmapHeight, bitmapVector, 20, 3);
+            waveCnt.GetAndAdd(-1);
         }
 
         private void FrmMultiThread_MouseMove(object sender, MouseEventArgs e)
@@ -116,7 +191,7 @@ namespace WaveEffect
             int tmp = random.Next(1, 10);
             if (tmp == 1 && e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                WaveSource wave = new WaveSource(e.X, e.Y, 20.0f, 5.0f, 0);
+                WaveSource wave = new WaveSource(e.X, e.Y, 50.0f, 20.0f, 0);
                 Thread waveThread = new Thread(new ParameterizedThreadStart(WaveThreadMethod));
                 waveThread.IsBackground = true;
                 waveThread.Start(wave);
@@ -127,7 +202,7 @@ namespace WaveEffect
         {
             if (e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                WaveSource wave = new WaveSource(e.X, e.Y, 10.0f, 5.0f, 0);                
+                WaveSource wave = new WaveSource(e.X, e.Y, 30.0f, 20f, 0);                
                 Thread waveThread = new Thread(new ParameterizedThreadStart(WaveThreadMethod));
                 waveThread.IsBackground = true;
                 waveThread.Start(wave);
@@ -138,6 +213,16 @@ namespace WaveEffect
         extern static void CalcMapTransform(int height, int width, IntPtr vectorPtr, byte[] arrDst, byte[] arrSource);
 
         [DllImport("wave.dll")]
-        extern static void SingleWaveCalc(WaveSource wave, int width, int height, IntPtr vectorPtr,int delay);
+        extern static void SingleWaveCalc(WaveSource wave, int width, int height, IntPtr vectorPtr,int delay,int speed);
+
+        private bool render = true;
+
+        private void FrmC_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                render = !render;
+            }
+        }
     }
 }

@@ -34,10 +34,11 @@ DLLIMPORT void CalcMapTransform(int height,int width, Vector *vector,unsigned  c
 				arrDst[i * 3 + j * width * 3 + 2] = arrSource[tranx * 3 + trany * width * 3 + 2];
 			}
 		}
+
 	}
 }
 
-DLLIMPORT void SingleWaveCalc(Wave wave,int width,int height,Vector* vector,int delay) {
+DLLIMPORT void SingleWaveCalc(Wave wave,int width,int height,Vector* vector,int delay,int speed) {
 //	char *msg=malloc(200);
 //	sprintf(msg,"wave.x:%d,wave.y:%d,wave.p:%d,,wave.amplitude:%f,wave.waveLength:%f,sizeof(wave):%d,sizeof(float):%d,sizeof(vector):%d",wave.x,wave.y,wave.p,wave.amplitude,wave.waveLength,sizeof(Wave),sizeof(float),sizeof(Vector));
 //	MessageBox(0,msg,"Hi",MB_ICONINFORMATION);
@@ -48,37 +49,74 @@ DLLIMPORT void SingleWaveCalc(Wave wave,int width,int height,Vector* vector,int 
 	float p3 = sqrt((wave.x * wave.x)+ (height - wave.y) * (height - wave.y));
 	float p4 = sqrt((wave.x * wave.x) + (wave.y * wave.y));
 	while (wave.p < p1 || wave.p < p2 || wave.p < p3 || wave.p < p4) {
-		float min = (wave.p - wave.waveLength)* (wave.p - wave.waveLength);
-		float max = (wave.p + wave.waveLength)* (wave.p + wave.waveLength);
+		float min = (wave.p - wave.waveLength/2)* (wave.p - wave.waveLength/2);
+		float max = (wave.p + wave.waveLength/2)* (wave.p + wave.waveLength/2);
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				float p = (i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y);
 				if (p >= min && p <= max) {
 					float p0 = sqrt(p);
-					vector[j*width + i].x += (int)(wave.amplitude * sin(p0 / wave.waveLength) * (i - wave.x) / p0);
-					vector[j*width + i].y += (int)(wave.amplitude * sin(p0 / wave.waveLength) * (j - wave.y) / p0);
+					vector[j*width + i].x += (int)(wave.amplitude * sin((p0-wave.p) / wave.waveLength*PI*2) * (i - wave.x) / p0);
+					vector[j*width + i].y += (int)(wave.amplitude * sin((p0-wave.p) / wave.waveLength*PI*2) * (j - wave.y) / p0);
 				}
 
 			}
 		}
-
 		Sleep(delay);
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				float p = (i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y);
-
 				if (p >= min && p <= max) {
 					float p0 = sqrt(p);
-					vector[j*width + i].x -= (int)(wave.amplitude * sin(p0 / wave.waveLength) * (i - wave.x) / p0);
-					vector[j*width + i].y -= (int)(wave.amplitude * sin(p0 / wave.waveLength) * (j - wave.y) / p0);
+					vector[j*width + i].x -= (int)(wave.amplitude * sin((p0-wave.p) / wave.waveLength*PI*2) * (i - wave.x) / p0);
+					vector[j*width + i].y -= (int)(wave.amplitude * sin((p0-wave.p) / wave.waveLength*PI*2) * (j - wave.y) / p0);
 				}
 
 			}
 		}
-		wave.p = wave.p + wave.waveLength;
-
+		wave.p = wave.p + speed;
 	}
 
+}
+
+DLLIMPORT void SingleWaveCalcV2(Wave wave,int width,int height,Vector* vector,int delay,int speed) {
+	float p1 = sqrt((width - wave.x) * (width - wave.x) + (height - wave.y) * (height - wave.y));
+	float p2 = sqrt((width - wave.x) * (width - wave.x) + wave.y * wave.y);
+	float p3 = sqrt((wave.x * wave.x)+ (height - wave.y) * (height - wave.y));
+	float p4 = sqrt((wave.x * wave.x) + (wave.y * wave.y));
+	while (wave.p < p1 || wave.p < p2 || wave.p < p3 || wave.p < p4) {
+		float min = (wave.p - wave.waveLength/2)* (wave.p - wave.waveLength/2);
+		float max = (wave.p + wave.waveLength/2)* (wave.p + wave.waveLength/2);
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				float p = (i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y);
+				if (p >= min && p <= max) {
+					float p0 = sqrt(p);
+					vector[j*width + i].x += (int)(wave.amplitude * calc((p0-wave.p)*2 / wave.waveLength) * (i - wave.x) / p0);
+					vector[j*width + i].y += (int)(wave.amplitude * calc((p0-wave.p)*2 / wave.waveLength) * (j - wave.y) / p0);
+				}
+
+			}
+		}
+		Sleep(delay);
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				float p = (i - wave.x) * (i - wave.x) + (j - wave.y) * (j - wave.y);
+				if (p >= min && p <= max) {
+					float p0 = sqrt(p);
+					vector[j*width + i].x -= (int)(wave.amplitude * calc((p0-wave.p)*2 / wave.waveLength) * (i - wave.x) / p0);
+					vector[j*width + i].y -= (int)(wave.amplitude * calc((p0-wave.p)*2 / wave.waveLength) * (j - wave.y) / p0);
+				}
+
+			}
+		}
+		wave.p = wave.p + speed;
+	}
+
+}
+
+float calc(float x) {
+	return x*(x-1)*(x+1);
 }
 
 DLLIMPORT void MultiWaveCalc(Wave *waves,int width,int height,Vector* vector,int waveSpeed,int waveCnt,int delay) {
@@ -102,7 +140,6 @@ DLLIMPORT void MultiWaveCalc(Wave *waves,int width,int height,Vector* vector,int
 							vector[j*width + i].x += (int)(waves[cnt].amplitude * sin(p0 / waves[cnt].waveLength) * (i - waves[cnt].x) / p0);
 							vector[j*width + i].y += (int)(waves[cnt].amplitude * sin(p0 / waves[cnt].waveLength) * (j - waves[cnt].y) / p0);
 						}
-
 					}
 				}
 			} else {
