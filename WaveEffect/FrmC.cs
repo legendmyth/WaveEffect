@@ -202,7 +202,7 @@ namespace WaveEffect
         {
             if (e.X > bitmapArea.X && e.Y > bitmapArea.Y && e.X < bitmapArea.X + bitmapArea.Width && e.Y < bitmapArea.Y + bitmapArea.Height)
             {
-                WaveSource wave = new WaveSource(e.X, e.Y, 30.0f, 20f, 0);                
+                WaveSource wave = new WaveSource(e.X, e.Y, 50.0f, 20f, 0);                
                 Thread waveThread = new Thread(new ParameterizedThreadStart(WaveThreadMethod));
                 waveThread.IsBackground = true;
                 waveThread.Start(wave);
