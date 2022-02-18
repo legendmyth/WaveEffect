@@ -46,14 +46,14 @@ namespace WaveEffect
             formGraphics = this.CreateGraphics();
             //Bitmap sourceMap = global::WaveEffect.Properties.Resources.img13;
 
-            
-            Bitmap sourceMap = new Bitmap(this.Width, this.Height);
+
+            Bitmap sourceMap = new Bitmap(this.Width, this.Height, PixelFormat.Format24bppRgb);
             using (Graphics graphics = Graphics.FromImage(sourceMap))
             {
-                graphics.CopyFromScreen(this.Location.X, this.Location.Y, 0, 0, new Size(this.Width,this.Height));
+                graphics.CopyFromScreen(this.Location.X, this.Location.Y, 0, 0, new Size(this.Width, this.Height));
                 sourceMap.Save("1.png", ImageFormat.Png);
             }
-            
+
             bitmap = new Bitmap(sourceMap.Width, sourceMap.Height);
 
             Rectangle rect = new Rectangle(0, 0, sourceMap.Width, sourceMap.Height);
